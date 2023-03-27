@@ -13,6 +13,7 @@ import (
 
 var ALLOWED_USERS = map[string]bool{
 	"NzAyMjM3NDU2OQ==": true,
+	"ODE0NzQ5MDE0NA==": true,
 }
 
 type LocalizationAdminService struct {
