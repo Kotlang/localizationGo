@@ -43,6 +43,10 @@ jobs:
           go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
           echo "${HOME}/go/bin" >> $GITHUB_PATH
           echo "Path is ${GITHUB_PATH}"
+
+      - name: Grant permissions
+        run: chmod +x ./build.sh
+        
       - name: Build
         run: ./build.sh
 
