@@ -16,6 +16,15 @@ func (db *LocalizationDb) LocalizedLabel(tenant, language string) *LocalizedLabe
 	return &LocalizedLabelRepository{baseRepo}
 }
 
+func (db *LocalizationDb) LanguageList(tenant string) *LanguageListRepository {
+	baseRepo := odm.AbstractRepository[models.LanguageListModel]{
+		Database:       tenant + "_localization",
+		CollectionName: "language_list",
+	}
+
+	return &LanguageListRepository{baseRepo}
+}
+
 func (db *LocalizationDb) Tenant() *TenantRepository {
 	baseRepo := odm.AbstractRepository[models.TenantModel]{
 		Database:       "global",
