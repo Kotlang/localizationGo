@@ -9,10 +9,10 @@ import (
 
 type LocalizationDb struct{}
 
-func (db *LocalizationDb) LocalizedLabel(tenant, language string) *LocalizedLabelRepository {
+func (db *LocalizationDb) LocalizedLabel(tenant, isoCode string) *LocalizedLabelRepository {
 	baseRepo := odm.AbstractRepository[models.LocalizedLabelModel]{
 		Database:       tenant + "_localization",
-		CollectionName: strings.ToLower(language) + "_labels",
+		CollectionName: strings.ToLower(isoCode) + "_labels",
 	}
 
 	return &LocalizedLabelRepository{baseRepo}
