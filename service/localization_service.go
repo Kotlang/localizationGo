@@ -37,7 +37,7 @@ func (u *LocalizationService) GetLabel(ctx context.Context, req *pb.GetLabelRequ
 		return nil, status.Error(codes.PermissionDenied, "Invalid domain token")
 	}
 
-	resChan, errChan := u.db.LocalizedLabel(tenantDetails.Name, req.Language).FindOneById(req.Key)
+	resChan, errChan := u.db.LocalizedLabel(tenantDetails.Name, req.IsoCode).FindOneById(req.Key)
 	select {
 	case res := <-resChan:
 		return &pb.LocalizedLabel{Key: res.Key, Value: res.Translation}, nil
@@ -46,7 +46,7 @@ func (u *LocalizationService) GetLabel(ctx context.Context, req *pb.GetLabelRequ
 	}
 }
 
-func (u *LocalizationService) GetAllLabelsByLanguage(ctx context.Context, req *pb.GetAllLabelsByLanguageRequest) (*pb.LocalizedLabelsResponse, error) {
+func (u *LocalizationService) GetAllLabelsByISOCode(ctx context.Context, req *pb.GetAllLabelsByISOCodeRequest) (*pb.LocalizedLabelsResponse, error) {
 	if len(req.Domain) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Invalid Domain Token")
 	}
@@ -56,7 +56,7 @@ func (u *LocalizationService) GetAllLabelsByLanguage(ctx context.Context, req *p
 		return nil, status.Error(codes.PermissionDenied, "Invalid domain token")
 	}
 
-	resChan, errChan := u.db.LocalizedLabel(tenantDetails.Name, req.Language).Find(bson.M{}, nil, 0, 0)
+	resChan, errChan := u.db.LocalizedLabel(tenantDetails.Name, req.IsoCode).Find(bson.M{}, nil, 0, 0)
 	select {
 	case res := <-resChan:
 		labels := funk.Map(res, func(label models.LocalizedLabelModel) *pb.LocalizedLabel {
