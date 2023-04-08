@@ -79,3 +79,27 @@ func (u *LocalizationService) GetAllLabelsByISOCode(ctx context.Context, req *pb
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 }
+
+func (u *LocalizationService) GetAllLanguages(ctx context.Context, req *pb.GetAllLanguagesRequest) (*pb.GetAllLanguagesResponse, error) {
+	if len(req.Domain) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "Invalid Domain Token")
+	}
+
+	tenantDetails := <-u.db.Tenant().FindOneByToken(req.Domain)
+	if tenantDetails == nil {
+		return nil, status.Error(codes.PermissionDenied, "Invalid domain token")
+	}
+
+	resChan, errChan := u.db.LanguageList(tenantDetails.Name).Find(bson.M{}, nil, 0, 0)
+
+	select {
+	case res := <-resChan:
+		languages := funk.Map(res, func(lang models.LanguageListModel) *pb.LanguageDetail {
+			return &pb.LanguageDetail{Language: lang.Language, IsoCode: lang.IsoCode}
+		}).([]*pb.LanguageDetail)
+
+		return &pb.GetAllLanguagesResponse{LanguageList: languages}, nil
+	case err := <-errChan:
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+}
