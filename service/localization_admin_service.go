@@ -5,17 +5,12 @@ import (
 
 	"github.com/SaiNageswarS/go-api-boot/auth"
 	"github.com/kotlang/localizationGo/db"
+	"github.com/kotlang/localizationGo/extensions"
 	pb "github.com/kotlang/localizationGo/generated"
 	"github.com/kotlang/localizationGo/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
-
-var ALLOWED_USERS = map[string]bool{
-	"NzAyMjM3NDU2OQ==": true,
-	"ODE0NzQ5MDE0NA==": true,
-	"ODA1NDk4NDM1MA==": true,
-}
 
 type LocalizationAdminService struct {
 	pb.UnimplementedLocalizationAdminServer
@@ -29,7 +24,7 @@ func NewLocalizationAdminService(db *db.LocalizationDb) *LocalizationAdminServic
 func (u *LocalizationAdminService) AddLabel(ctx context.Context, req *pb.AddLabelRequest) (*pb.AddLabelResponse, error) {
 	userId, tenant := auth.GetUserIdAndTenant(ctx)
 
-	if val, ok := ALLOWED_USERS[userId]; !ok || !val {
+	if !<-extensions.IsUserAdmin(ctx, userId) {
 		return nil, status.Error(codes.PermissionDenied, "User not allowed to add labels")
 	}
 
@@ -40,8 +35,8 @@ func (u *LocalizationAdminService) AddLabel(ctx context.Context, req *pb.AddLabe
 func (u *LocalizationAdminService) AddLanguage(ctx context.Context, req *pb.AddLanguageRequest) (*pb.AddLanguageResponse, error) {
 	userId, tenant := auth.GetUserIdAndTenant(ctx)
 
-	if val, ok := ALLOWED_USERS[userId]; !ok || !val {
-		return nil, status.Error(codes.PermissionDenied, "User not allowed to add languages")
+	if !<-extensions.IsUserAdmin(ctx, userId) {
+		return nil, status.Error(codes.PermissionDenied, "User not allowed to add labels")
 	}
 
 	<-u.db.LanguageList(tenant).Save(&models.LanguageListModel{Language: req.Language, IsoCode: req.IsoCode})

@@ -1,3 +1,6 @@
 [submodule "localization-model"]
 	path = localization-model
 	url = git@github.com:Kotlang/localization-model.git
+[submodule "auth-model"]
+	path = auth-model
+	url = https://github.com/Kotlang/auth-model.git

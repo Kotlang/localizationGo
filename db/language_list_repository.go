@@ -5,6 +5,10 @@ import (
 	"github.com/kotlang/localizationGo/models"
 )
 
+type LanguageListRepositoryInterface interface {
+	odm.BootRepository[models.LanguageListModel]
+}
+
 type LanguageListRepository struct {
-	odm.AbstractRepository[models.LanguageListModel]
+	odm.UnimplementedBootRepository[models.LanguageListModel]
 }
