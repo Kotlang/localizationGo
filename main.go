@@ -1,32 +1,24 @@
 package main
 
 import (
-	"os"
-
-	"github.com/SaiNageswarS/go-api-boot/logger"
 	"github.com/SaiNageswarS/go-api-boot/server"
-	"github.com/joho/godotenv"
 	pb "github.com/kotlang/localizationGo/generated"
-	"go.uber.org/zap"
+	"github.com/rs/cors"
 )
 
 var grpcPort = ":50051"
 var webPort = ":8081"
 
-func init() {
-	err := godotenv.Load()
-	if err != nil {
-		logger.Error("Error loading .env file", zap.Error(err))
-	}
-}
-
 func main() {
-	// go-api-boot picks up keyvault name from environment variable.
-	os.Setenv("AZURE-KEYVAULT-NAME", "kotlang-secrets")
-	server.LoadSecretsIntoEnv(true)
 	inject := NewInject()
+	inject.CloudFns.LoadSecretsIntoEnv()
 
-	bootServer := server.NewGoApiBoot()
+	corsConfig := cors.New(
+		cors.Options{
+			AllowedHeaders: []string{"*"},
+		})
+
+	bootServer := server.NewGoApiBoot(corsConfig)
 	pb.RegisterLabelLocalizationServer(bootServer.GrpcServer, inject.LocalizationService)
 	pb.RegisterLocalizationAdminServer(bootServer.GrpcServer, inject.LocalizationAdminService)
 

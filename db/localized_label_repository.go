@@ -5,6 +5,10 @@ import (
 	"github.com/kotlang/localizationGo/models"
 )
 
+type LocalizedLabelRepositoryInterface interface {
+	odm.BootRepository[models.LocalizedLabelModel]
+}
+
 type LocalizedLabelRepository struct {
-	odm.AbstractRepository[models.LocalizedLabelModel]
+	odm.UnimplementedBootRepository[models.LocalizedLabelModel]
 }

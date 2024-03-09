@@ -7,10 +7,16 @@ import (
 	"github.com/kotlang/localizationGo/models"
 )
 
+type LocalizationDbInterface interface {
+	LocalizedLabel(tenant, isoCode string) LocalizedLabelRepositoryInterface
+	LanguageList(tenant string) LanguageListRepositoryInterface
+	Tenant() TenantRepositoryInterface
+}
+
 type LocalizationDb struct{}
 
-func (db *LocalizationDb) LocalizedLabel(tenant, isoCode string) *LocalizedLabelRepository {
-	baseRepo := odm.AbstractRepository[models.LocalizedLabelModel]{
+func (db *LocalizationDb) LocalizedLabel(tenant, isoCode string) LocalizedLabelRepositoryInterface {
+	baseRepo := odm.UnimplementedBootRepository[models.LocalizedLabelModel]{
 		Database:       tenant + "_localization",
 		CollectionName: strings.ToLower(isoCode) + "_labels",
 	}
@@ -18,8 +24,8 @@ func (db *LocalizationDb) LocalizedLabel(tenant, isoCode string) *LocalizedLabel
 	return &LocalizedLabelRepository{baseRepo}
 }
 
-func (db *LocalizationDb) LanguageList(tenant string) *LanguageListRepository {
-	baseRepo := odm.AbstractRepository[models.LanguageListModel]{
+func (db *LocalizationDb) LanguageList(tenant string) LanguageListRepositoryInterface {
+	baseRepo := odm.UnimplementedBootRepository[models.LanguageListModel]{
 		Database:       tenant + "_localization",
 		CollectionName: "language_list",
 	}
@@ -27,8 +33,8 @@ func (db *LocalizationDb) LanguageList(tenant string) *LanguageListRepository {
 	return &LanguageListRepository{baseRepo}
 }
 
-func (db *LocalizationDb) Tenant() *TenantRepository {
-	baseRepo := odm.AbstractRepository[models.TenantModel]{
+func (db *LocalizationDb) Tenant() TenantRepositoryInterface {
+	baseRepo := odm.UnimplementedBootRepository[models.TenantModel]{
 		Database:       "global",
 		CollectionName: "tenant",
 	}
